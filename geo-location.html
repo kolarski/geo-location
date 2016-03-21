@@ -73,8 +73,7 @@ Provides the current location using the [Geolocation API](https://developer.mozi
          */
         idle: {
           type: Boolean,
-          value: false,
-          observer: 'fetch'
+          value: false
         },
 
         /**
@@ -83,8 +82,7 @@ Provides the current location using the [Geolocation API](https://developer.mozi
          */
         watchPos: {
           type: Boolean,
-          value: false,
-          observer: 'fetch'
+          value: false
         },
 
         /**
@@ -122,6 +120,13 @@ Provides the current location using the [Geolocation API](https://developer.mozi
         }
 
       },
+      
+      // Guard clause in case observer runs before element is ready. Refer to Polymer issue #3438
+      // https://github.com/Polymer/polymer/issues/3438
+      observers: [
+        'fetch(idle, watchPos, highAccuracy, timeout, maximumAge)'
+      ],
+
      /**
        * Fired when the Geolocation API returns an error.
        *
@@ -140,10 +145,6 @@ Provides the current location using the [Geolocation API](https://developer.mozi
        *   @param {Number} detail.longitude Longitude of the current position.
        */
 
-      ready: function() {
-        this.fetch();
-      },
-
       clear: function () {
         this._setPosition(null);
         this._setLatitude(null);
@@ -151,12 +152,6 @@ Provides the current location using the [Geolocation API](https://developer.mozi
       },
 
       fetch: function () {
-        // Guard clause in case observer runs before element is ready. Refer to Polymer issue #3438
-        // https://github.com/Polymer/polymer/issues/3438
-        if (this.idle === undefined || this.watchPos === undefined || this.highAccuracy === undefined || this.timeout === undefined || this.maximumAge === undefined) {
-          return;
-        }
-
         if (fetching_) {
           return;
         }
